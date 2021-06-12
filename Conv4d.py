@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from torch.nn.modules.utils import _triple, _reverse_repeat_tuple
+from torch.nn.modules.utils import _quadruple, _reverse_repeat_tuple
 import math
 import torch.nn.functional as F
 
@@ -16,10 +16,10 @@ class Conv4d(nn.Module):
                  bias=False,
                  padding_mode:str ='zeros'):
         super(Conv4d, self).__init__()
-        kernel_size = _triple(kernel_size)
-        stride = _triple(stride)
-        padding = _triple(padding)
-        dilation = _triple(dilation)
+        kernel_size = _quadruple(kernel_size)
+        stride = _quadruple(stride)
+        padding = _quadruple(padding)
+        dilation = _quadruple(dilation)
 
         if in_channels % groups != 0:
             raise ValueError('in_channels must be divisible by groups')
