@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from torch.nn.modules.utils import _pair, _reverse_repeat_tuple
+from torch.nn.modules.utils import _pair
 import math
 import torch.nn.functional as F
 import numpy as np
