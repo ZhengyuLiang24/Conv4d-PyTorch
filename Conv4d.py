@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from torch.nn.modules.utils import _quadruple, _reverse_repeat_tuple
+from torch.nn.modules.utils import _quadruple
 import math
 import torch.nn.functional as F
 
@@ -60,8 +60,25 @@ class Conv4d(nn.Module):
             self.bias = nn.Parameter(torch.Tensor(out_channels))
         else:
             self.bias = None
-
         self.reset_parameters()
+
+        # Use a ModuleList to store layers to make the Conv4d layer trainable
+        self.conv3d_layers = torch.nn.ModuleList()
+
+        for i in range(self.kernel_size[0]):
+            # Initialize a Conv3D layer
+            conv3d_layer = nn.Conv3d(in_channels=self.in_channels,
+                                     out_channels=self.out_channels,
+                                     kernel_size=self.kernel_size[1::],
+                                     padding=self.padding[1::],
+                                     dilation=self.dilation[1::],
+                                     stride=self.stride[1::])
+            conv3d_layer.weight = nn.Parameter(self.weight[:, :, i, :, :])
+
+            # Store the layer
+            self.conv3d_layers.append(conv3d_layer)
+
+        del self.weight
 
 
     def reset_parameters(self) -> None:
@@ -101,20 +118,15 @@ class Conv4d(nn.Module):
                 # Calculate the output frame
                 out_frame = (j - zero_offset) // l_s
                 # Add results to this output frame
-                out[:, :, out_frame, :, :, :] += F.conv3d(input=input[:, :, j, :, :, :],
-                                                          weight=self.weight[:, :, i, :, :, :],
-                                                          bias=None,
-                                                          stride=self.stride[1::],
-                                                          padding=self.padding[1::],
-                                                          dilation=self.dilation[1::],
-                                                          groups=self.groups)
+                out[:, :, out_frame, :, :, :] += self.conv3d_layers[i](input[:, :, j, :, :])
 
         # Add bias to output
         if self.bias is not None:
             out = out + self.bias.view(1, -1, 1, 1, 1, 1)
 
-
         return out
+
+    
 
 if __name__ == "__main__":
     input = torch.randn(2, 1, 5, 5, 5, 5).cuda()
@@ -122,23 +134,6 @@ if __name__ == "__main__":
     net = Conv4d(1, 1, kernel_size=(3, 1,1, 1), padding=(0, 0, 0, 0), stride=(1, 1, 1, 1), dilation=(1, 1, 1, 1), bias=True ).cuda()
     out1 = net(input)
 
-    # for _ in range(100):
-    #     input = torch.randn(2, 16, 50, 50, 50).cuda()
-    #     kernel_size = np.random.randint(1, 5)
-    #     padding = np.random.randint(0, 10)
-    #     stride = np.random.randint(1, 10)
-    #     dilation = np.random.randint(1, 3)
-    #     net = Conv4d(16, 16, kernel_size=(kernel_size, np.random.randint(1, 5), np.random.randint(1, 5)),
-    #                  padding=(padding, np.random.randint(0, 10), np.random.randint(0, 10)),
-    #                  stride=(stride, np.random.randint(1, 10), np.random.randint(1, 10)),
-    #                  dilation=(dilation, np.random.randint(1, 3), np.random.randint(1, 3)),
-    #                  groups=1, bias=True).cuda()
-    #     out1 = net(input)
-    #     if out1>2e-4:
-    #         print('error')
-
-
-    temp = 1
 
 
 
