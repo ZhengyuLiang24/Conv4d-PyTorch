@@ -126,7 +126,7 @@ class Conv4d(nn.Module):
 
         return out
 
-    
+
 
 if __name__ == "__main__":
     input = torch.randn(2, 1, 5, 5, 5, 5).cuda()
