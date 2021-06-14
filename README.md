@@ -4,7 +4,7 @@
 # Introduction
 This repository was inspired by the [pytorch-conv4d](https://github.com/timothygebhard/pytorch-conv4d) repository. It consists of an easy-to-use 4-dimensional convolution class (Conv4d) for PyTorch, in which, 4-dimensional convolution is disassembled into a number of official PyTorch 3-dimensional convolutions. It works by performing and stacking several 3D convolutions under proper conditions (see the original repository for a more detailed explanations).
 
-However, the solution of [pytorch-conv4d](https://github.com/timothygebhard/pytorch-conv4d) repository is restricted. Its ***stride*** and ***dilation*** are constrainedly set to 1. And its ***bias*** does not work perfectly. In this repository, some key code has been rewritten to support the arbitrary values for ***stride***, ***dilation*** and ***bias***.
+However, the solution of [pytorch-conv4d](https://github.com/timothygebhard/pytorch-conv4d) repository is restricted. Its ***stride*** and ***dilation*** are constrainedly set to 1. And its ***bias*** does not work perfectly. Moreover, the weight initialization does not achieve the uniform distribution in four dimensions. In this repository, some key code has been rewritten to support the arbitrary values for ***stride***, ***dilation*** and ***bias***. The code for weight initialization has also been rewritten to realize Kaiming Initialization.
 
 
 ## Validation
