@@ -72,7 +72,8 @@ class Conv4d(nn.Module):
                                      kernel_size=self.kernel_size[1::],
                                      padding=self.padding[1::],
                                      dilation=self.dilation[1::],
-                                     stride=self.stride[1::])
+                                     stride=self.stride[1::]
+                                     bias=False)
             conv3d_layer.weight = nn.Parameter(self.weight[:, :, i, :, :])
 
             # Store the layer
